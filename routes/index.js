@@ -21,8 +21,6 @@ router.get('/', function (req, res, next) {
     });
   }
 
-  return res.send({ message: 'success' });
-  
   fetch(JENKINS_ENDPOINTS.daticalService, {
     method: 'POST',
     headers: { 'Authorization': `Basic ${JENKINS_TOKEN}` }
