@@ -1,5 +1,5 @@
 const jenkinsTokenMiddleware = (req, res, next) => {
-  const JENKINS_TOKEN = process.env.JENKINS_TOKEN;
+  const JENKINS_TOKEN =  req.get('x-jenkins-token') || process.env.JENKINS_TOKEN;
   if (!JENKINS_TOKEN) {
     return res.status(500).send({
       message: '`JSON_TOKEN` not defined.'

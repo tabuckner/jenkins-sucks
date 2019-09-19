@@ -18,32 +18,42 @@ const genericJobRouter = require('./routes/generic-job.router');
 const app = express();
 
 /**
- * Rate Limiter
+ * Rate Limiters
  * 
- * Allows one request per 5 minutes per IP.
  * Read More: https://www.npmjs.com/package/express-rate-limit
  */
-const limiter = rateLimit({
+const genericJobRateLimiter = rateLimit({
   windowMs: helpers.minutesToMilliseconds(5),
   max: 1,
   message: { message: 'Too many requests have been sent. Try again in a few minutes.' }
 });
+const mainRouteRateLimiter = rateLimit({
+  windowMs: helpers.minutesToMilliseconds(5),
+  max: 5,
+  message: { message: 'Too many requests have been sent. Try again in a few minutes.' }
+});
 
 /**
- * Config/Middleware
+ * Middlewares
  */
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
 app.set('trust proxy', 1);
-app.use(limiter);
 app.use(jenkinsTokenMiddleware);
 app.use(devModeChokeMiddleware);
+
+/**
+ * Configs
+ */
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', mainRouter);
-app.use('/generic-job', genericJobRouter);
+/**
+ * Router Setup
+ */
+app.use('/', mainRouteRateLimiter, mainRouter);
+app.use('/generic-job', genericJobRateLimiter, genericJobRouter);
 
 module.exports = app;
