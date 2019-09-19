@@ -1,20 +1,21 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helpers = require('./util/helpers');
+const jenkinsTokenMiddleware = require('./middleware/jenkins-token.middleware');
+const devModeChokeMiddleware = require('./middleware/dev-mode-choke.middleware');
 
 /**
  * Routers
  */
-var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
+const mainRouter = require('./routes/main.router');
+const genericJobRouter = require('./routes/generic-job.router');
 
 /**
  * App
  */
-var app = express();
+const app = express();
 
 /**
  * Rate Limiter
@@ -29,19 +30,20 @@ const limiter = rateLimit({
 });
 
 /**
- * Config
+ * Config/Middleware
  */
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
 app.set('trust proxy', 1);
 app.use(limiter);
+app.use(jenkinsTokenMiddleware);
+app.use(devModeChokeMiddleware);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-// app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+app.use('/', mainRouter);
+app.use('/generic-job', genericJobRouter);
 
 module.exports = app;
