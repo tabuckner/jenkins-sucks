@@ -32,4 +32,33 @@ router.get('/', function (req, res, next) {
   });
 });
 
+/**
+ * Post to Home Route
+ */
+router.post('/', function (req, res, next) {
+  // res.render('index', { title: 'Express' });
+
+  if (!JENKINS_ENDPOINTS) {
+    return res.status(500).send({
+      message: '`endpoints` is not defined.'
+    });
+  }
+
+  if (!JENKINS_TOKEN ) {
+    return res.status(500).send({
+      message: '`JENKINS_TOKEN` is not defined.'
+    });
+  }
+
+  fetch(JENKINS_ENDPOINTS.daticalService, {
+    method: 'POST',
+    headers: { 'Authorization': `Basic ${JENKINS_TOKEN}` }
+  }).then((response) => {
+    return res.status(200).send({
+      message: 'Request Successful',
+      jenkinsResponse: response
+    });
+  });
+});
+
 module.exports = router;
