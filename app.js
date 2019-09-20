@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helpers = require('./util/helpers');
+const debugLogger = require('./util/logger');
 const jenkinsTokenMiddleware = require('./middleware/jenkins-token.middleware');
 const devModeChokeMiddleware = require('./middleware/dev-mode-choke.middleware');
 const devLogMiddleware = require('./middleware/dev-log.middleware');
@@ -36,11 +37,29 @@ app.use(cookieParser());
 app.set('trust proxy', 1);
 const genericJobRateLimiter = rateLimit({
   windowMs: helpers.minutesToMilliseconds(5),
-  max: 1,
+  max: 2,
   message: 'Woah there, calm down bro-town. Take five and hit me again...',
   keyGenerator: (req) => {
-    const commandsUsed = req.body && req.body.text && req.body.text.length > 0;
-    return req.body.text.split(' ')[0];
+    const requestBody = req && req.body;
+    const commandsUsed = requestBody && req.body.text && req.body.text.length > 0;
+    const slackUserName = requestBody && req.body.user_name;
+    const slackUserId = requestBody && req.body.user_id;
+
+    if (slackUserName || slackUserId) {
+      debugLogger.log(`Slack User Name ${slackUserName}, Slack User ID: ${slackUserId}`)
+      const uniqueId = req.body.user_id || req.body.user_name;
+      debugLogger.log(`Using ${uniqueId} as 'uniqueId'`);
+      return uniqueId;
+    }
+
+    if (!commandsUsed) {
+      debugLogger.log(`Using ${req.ip} as 'uniqueId`)
+      return req.ip;
+    }
+
+    const uniqueId = req.body.text.split(' ')[0]
+    debugLogger.log(`Using ${uniqueId} as 'uniqueId`)
+    return uniqueId;
   }
 });
 const mainRouteRateLimiter = rateLimit({

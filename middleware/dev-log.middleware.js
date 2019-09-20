@@ -1,8 +1,7 @@
+const logger = require('../util/logger');
+
 const devLogMiddleware = (req, res, next) => {
-  const DEV_MODE = process.env.DEV_MODE || process.env.DEV;
-  if (DEV_MODE === true || DEV_MODE && DEV_MODE.length > 0 && DEV_MODE.toLowerCase() === 'true') {
-    console.warn(req.body);
-  }
+  logger.warn(req.body)
   next();
 }
 

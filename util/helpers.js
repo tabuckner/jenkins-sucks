@@ -1,3 +1,5 @@
+const logger = require('./logger');
+
 /**
  * Returns number of minutes in milliseconds.
  * 
@@ -15,7 +17,7 @@ const minutesToMilliseconds = (number) => {
  * @param {String} jobName the name of the job as listed in Jenkins you wish to refresh.
  */
 const buildJenkinsScanUrl = (orgBaseUrl, jobName) => {
-  console.warn({orgBaseUrl, jobName});
+  logger.log('Jenkins Url to be Used.', {orgBaseUrl, jobName});
   if (!orgBaseUrl) {
     throw new Error('Base URL not defined');
   }
@@ -28,7 +30,13 @@ const buildJenkinsScanUrl = (orgBaseUrl, jobName) => {
   return `${baseUrl}/${jobName}/${scanQueryParams}`;
 }
 
+const appInDevMode = () => {
+  const DEV_MODE = process.env.DEV_MODE || process.env.DEV;
+  return DEV_MODE === true || DEV_MODE && DEV_MODE.length > 0 && DEV_MODE.toLowerCase() === 'true';
+}
+
 module.exports = {
   minutesToMilliseconds,
-  buildJenkinsScanUrl
+  buildJenkinsScanUrl,
+  appInDevMode
 }
