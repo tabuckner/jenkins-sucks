@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const urlBuilder = require('../util/helpers').buildJenkinsScanUrl;
+const logger = require('../util/logger');
 
 /**
  * Generic Endpoint
@@ -29,12 +30,19 @@ router.post('/:orgBaseUrl', function(req, res, next) {
 
   const message = commands.length > 1 ? `I agree, ${jenkinsJobName} rilly do be ${commands.slice(1).join(' ')}.` : 'Message Relayed';
 
-  fetch(url, {
-    method: 'POST',
-    headers: { 'Authorization': res.get('Authorization') }
-  }).then((response) => {
-    return res.status(200).send(message);
-  });
+  try {
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': res.get('Authorization') }
+    }).then((response) => {
+      return res.status(200).send(message);
+    }).catch((e) => {
+      logger.error(e);
+      res.status(500).send('Something went wrong.')
+    });
+  } catch(e) {
+    return res.send(e);
+  }
 });
 
 /**
@@ -42,15 +50,23 @@ router.post('/:orgBaseUrl', function(req, res, next) {
  */
 router.get('/:orgBaseUrl/:jenkinsJob', function(req, res, next) {
   const { orgBaseUrl, jenkinsJob } = req.params;
+  logger.log(`Received a request to update ${jenkinsJob} at org ${orgBaseUrl}`);
   const url = urlBuilder(orgBaseUrl, jenkinsJob);
   const message = 'Message Relayed.';
 
-  fetch(url, {
-    method: 'POST',
-    headers: { 'Authorization': res.get('Authorization') }
-  }).then((response) => {
-    return res.status(200).send(message);
-  });
+  try {
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': res.get('Authorization') }
+    }).then((response) => {
+      return res.status(200).send(message);
+    }).catch((e) => {
+      logger.error(e);
+      res.status(500).send('Something went wrong.')
+    });
+  } catch(e) {
+    return res.send(e);
+  }
 });
 
 /**
@@ -61,12 +77,19 @@ router.post('/:orgBaseUrl/:jenkinsJob', function(req, res, next) {
   const url = urlBuilder(orgBaseUrl, jenkinsJob);
   const message = 'Message Relayed.';
   
-  fetch(url, {
-    method: 'POST',
-    headers: { 'Authorization': res.get('Authorization') }
-  }).then((response) => {
-    return res.status(200).send(message);
-  });
+  try {
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': res.get('Authorization') }
+    }).then((response) => {
+      return res.status(200).send(message);
+    }).catch((e) => {
+      logger.error(e);
+      res.status(500).send('Something went wrong.')
+    });
+  } catch(e) {
+    return res.send(e);
+  }
 });
 
 module.exports = router;
