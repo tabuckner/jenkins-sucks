@@ -54,7 +54,7 @@ app.use(cookieParser());
  * Router Setup
  */
 app.use('/', mainRouteRateLimiter, mainRouter);
-app.use('/generic-job', genericJobRateLimiter, genericJobRouter);
+process.env.DEV_MODE ? app.use('/generic-job', genericJobRouter) : app.use('/generic-job', genericJobRateLimiter, genericJobRouter);
 app.use('/vendor', express.static(__dirname + '/node_modules'))
 
 module.exports = app;
