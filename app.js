@@ -55,5 +55,6 @@ app.use(cookieParser());
  */
 app.use('/', mainRouteRateLimiter, mainRouter);
 app.use('/generic-job', genericJobRateLimiter, genericJobRouter);
+app.use('/vendor', express.static(__dirname + '/node_modules'))
 
 module.exports = app;
