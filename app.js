@@ -27,12 +27,12 @@ const app = express();
 const genericJobRateLimiter = rateLimit({
   windowMs: helpers.minutesToMilliseconds(5),
   max: 1,
-  message: { message: 'Too many requests have been sent. Try again in a few minutes.' }
+  message: 'Woah there, calm down bro-town. Take five and hit me again...'
 });
 const mainRouteRateLimiter = rateLimit({
   windowMs: helpers.minutesToMilliseconds(5),
   max: 5,
-  message: { message: 'Too many requests have been sent. Try again in a few minutes.' }
+  message: 'Woah there, calm down bro-town. Take five and hit me again...'
 });
 
 /**
@@ -43,7 +43,7 @@ const mainRouteRateLimiter = rateLimit({
 app.set('trust proxy', 1);
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 /**
@@ -57,7 +57,7 @@ app.use(devLogMiddleware);
  * Router Setup
  */
 app.use('/', mainRouteRateLimiter, mainRouter);
-process.env.DEV_MODE ? app.use('/generic-job', genericJobRouter) : app.use('/generic-job', genericJobRateLimiter, genericJobRouter);
+app.use('/generic-job', genericJobRateLimiter, genericJobRouter);
 app.use('/vendor', express.static(__dirname + '/node_modules'))
 
 module.exports = app;

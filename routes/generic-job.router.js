@@ -13,20 +13,43 @@ router.get('/', function(req, res, next) {
 });
 
 /**
- * GET to Generic Job Route.
+ * POST to Generic Route Job in Payload.
  */
-router.get('/:orgBaseUrl/:jenkinsJob', function(req, res, next) {
-  const { orgBaseUrl, jenkinsJob } = req.params;
-  const url = urlBuilder(orgBaseUrl, jenkinsJob);
+router.post('/:orgBaseUrl', function(req, res, next) {
+  const { orgBaseUrl } = req.params;
+  const text = req.body.text;
+  
+  if (!text) {
+    return res.statusCode(500).send('You gotta give me something to work with here! What\'s the Jenkins Job?')
+  }
+
+  const commands = text.split(' ');
+  const jenkinsJobName = commands[0];
+  const url = urlBuilder(orgBaseUrl, jenkinsJobName);
+
+  const message = commands.length > 1 ? `I agree, ${jenkinsJobName} rilly do be ${commands.slice(1).join(' ')}.` : 'Message Relayed';
 
   fetch(url, {
     method: 'POST',
     headers: { 'Authorization': res.get('Authorization') }
   }).then((response) => {
-    return res.status(200).send({
-      message: 'Message Relayed.',
-      jenkinsResponse: response
-    });
+    return res.status(200).send(message);
+  });
+});
+
+/**
+ * GET to Generic Job Route.
+ */
+router.get('/:orgBaseUrl/:jenkinsJob', function(req, res, next) {
+  const { orgBaseUrl, jenkinsJob } = req.params;
+  const url = urlBuilder(orgBaseUrl, jenkinsJob);
+  const message = 'Message Relayed.';
+
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Authorization': res.get('Authorization') }
+  }).then((response) => {
+    return res.status(200).send(message);
   });
 });
 
@@ -36,16 +59,13 @@ router.get('/:orgBaseUrl/:jenkinsJob', function(req, res, next) {
 router.post('/:orgBaseUrl/:jenkinsJob', function(req, res, next) {
   const { orgBaseUrl, jenkinsJob } = req.params;
   const url = urlBuilder(orgBaseUrl, jenkinsJob);
-  return res.send('success')
-
+  const message = 'Message Relayed.';
+  
   fetch(url, {
     method: 'POST',
     headers: { 'Authorization': res.get('Authorization') }
   }).then((response) => {
-    return res.status(200).send({
-      message: 'Message Relayed.',
-      jenkinsResponse: response
-    });
+    return res.status(200).send(message);
   });
 });
 
