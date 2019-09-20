@@ -1,47 +1,60 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helpers = require('./util/helpers');
+const jenkinsTokenMiddleware = require('./middleware/jenkins-token.middleware');
+const devModeChokeMiddleware = require('./middleware/dev-mode-choke.middleware');
 
 /**
  * Routers
  */
-var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
+const mainRouter = require('./routes/main.router');
+const genericJobRouter = require('./routes/generic-job.router');
 
 /**
  * App
  */
-var app = express();
+const app = express();
 
 /**
- * Rate Limiter
+ * Rate Limiters
  * 
- * Allows one request per 5 minutes per IP.
  * Read More: https://www.npmjs.com/package/express-rate-limit
  */
-const limiter = rateLimit({
+const genericJobRateLimiter = rateLimit({
   windowMs: helpers.minutesToMilliseconds(5),
   max: 1,
   message: { message: 'Too many requests have been sent. Try again in a few minutes.' }
 });
+const mainRouteRateLimiter = rateLimit({
+  windowMs: helpers.minutesToMilliseconds(5),
+  max: 5,
+  message: { message: 'Too many requests have been sent. Try again in a few minutes.' }
+});
 
 /**
- * Config
+ * Middlewares
  */
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 // see https://expressjs.com/en/guide/behind-proxies.html
 app.set('trust proxy', 1);
-app.use(limiter);
+app.use(jenkinsTokenMiddleware);
+app.use(devModeChokeMiddleware);
+
+/**
+ * Configs
+ */
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-// app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+/**
+ * Router Setup
+ */
+app.use('/', mainRouteRateLimiter, mainRouter);
+app.use('/generic-job', genericJobRateLimiter, genericJobRouter);
+app.use('/vendor', express.static(__dirname + '/node_modules'))
 
 module.exports = app;

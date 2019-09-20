@@ -2,12 +2,34 @@
 
 <head>
   <title>Express</title>
+  <link rel="stylesheet" href="/vendor/milligram/dist/milligram.min.css">
   <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
+  <div class="container">
+    <h1>Jenkins Sucks</h1>
+    <h6><em>Change my mind.</em></h6>
+  
+    <p>
+      This simple API can be used to send Rate-Limited requests to a Jenkins (?) of your choosing.
+    </p>
+  
+    <h2>How To Use Me</h2>
+    <h3>Authentication</h3>
+    <p>To make successful requests to your Jenkins endpoints, you must provide a valid Jenkins API token.</p>
+    <h4>The Header</h4>
+    <p>Send the token in a <code>x-jenkins-token</code> header.
+      If this weirds you out, take my word for it, <em>we're not storing these</em>. Or don't--honestly I don't care.
+    </p>
+  
+    <h3>Make the Request</h3>
+    <p>
+      Simply make a <code>GET</code> or <code>POST</code> request that contains the Jenkins Base URL (and port, if necessary) and Job Name to the <code>/generic-job</code> endpoint.
+    </p>
+    <h4>Example</h4>
+    <code>POST https://jenkins-sucks.heroku.com/my.base.url:1337/MyJobName</code>
+  </div>
 </body>
 
 </html>
