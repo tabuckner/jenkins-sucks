@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const helpers = require('./util/helpers');
 const jenkinsTokenMiddleware = require('./middleware/jenkins-token.middleware');
 const devModeChokeMiddleware = require('./middleware/dev-mode-choke.middleware');
+const devLogMiddleware = require('./middleware/dev-log.middleware');
 
 /**
  * Routers
@@ -46,6 +47,7 @@ app.use(devModeChokeMiddleware);
  * Configs
  */
 app.use(logger('dev'));
+app.use(devLogMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
