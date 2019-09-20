@@ -53,8 +53,8 @@ const mainRouteRateLimiter = rateLimit({
  * Custom Middlewares
  */
 app.use(jenkinsTokenMiddleware);
-app.use(devModeChokeMiddleware);
 app.use(devLogMiddleware);
+app.use(devModeChokeMiddleware);
 
 /**
  * Router Setup
