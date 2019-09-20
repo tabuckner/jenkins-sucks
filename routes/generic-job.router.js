@@ -33,9 +33,10 @@ router.get('/:orgBaseUrl/:jenkinsJob', function(req, res, next) {
 /**
  * POST to Generic Job route.
  */
-router.post('/:jenkinsJob', function(req, res, next) {
-  const { jenkinsJob } = req.params;
-  const url = urlBuilder(jenkinsJob);
+router.post('/:orgBaseUrl/:jenkinsJob', function(req, res, next) {
+  const { orgBaseUrl, jenkinsJob } = req.params;
+  const url = urlBuilder(orgBaseUrl, jenkinsJob);
+  return res.send('success')
 
   fetch(url, {
     method: 'POST',
