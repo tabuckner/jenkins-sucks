@@ -15,7 +15,7 @@ const minutesToMilliseconds = (number) => {
  * @param {String} jobName the name of the job as listed in Jenkins you wish to refresh.
  */
 const buildJenkinsScanUrl = (orgBaseUrl, jobName) => {
-  console.warn(orgBaseUrl, jobName);
+  console.warn({orgBaseUrl, jobName});
   if (!orgBaseUrl) {
     throw new Error('Base URL not defined');
   }
